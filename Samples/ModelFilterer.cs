@@ -148,6 +148,25 @@ namespace Public.Dac.Samples
             }
         }
 
+        public void CreateFilteredDacpac(TSqlModel model, string filteredDacpacPath)
+        {
+            DisposableList disposables = new DisposableList();
+            try
+            {
+                TSqlModel filteredModel = disposables.Add(CreateFilteredModel(model));
+
+                DacPackageExtensions.BuildPackage(
+                    filteredDacpacPath,
+                    filteredModel,
+                    new PackageMetadata(),
+                    new PackageOptions());
+            }
+            finally
+            {
+                disposables.Dispose();
+            }
+        }
+
         /// <summary>
         /// Updates the model inside an existing dacpac. All other parts of the package (the refactor log, pre/post deployment scripts,
         /// contributors to use etc) stay the same. 

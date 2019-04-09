@@ -25,6 +25,8 @@
 //</copyright>
 //------------------------------------------------------------------------------
 using System;
+using Microsoft.SqlServer.Dac;
+using Microsoft.SqlServer.Dac.Model;
 
 namespace Public.Dac.Samples.App
 {
@@ -36,7 +38,8 @@ namespace Public.Dac.Samples.App
             RunEndToEnd,
             FilterModel,
             RunCodeAnalysis,
-            ValidateQuerySemantically
+            ValidateQuerySemantically,
+            ModelSchemaSepartor
         }
 
         static void Main(string[] args)
@@ -49,6 +52,7 @@ namespace Public.Dac.Samples.App
 Current actions:
 [RunEndToEnd] - Runs the end to end demo that creates a model, copies to another model, and saves the model to a dacpac
 [FilterModel] - Runs a demo that creates a model then creates a filtered copy with some schemas removed.
+[ModelSchemaSeparator] - Takes the provided DacPac and separates the included schemas into their own DacPacs.
 [RunCodeAnalysis] - Runs a demo of running Static Code Analysis from your code.
 [Usage] - Print this usage message
 ");
@@ -64,6 +68,9 @@ Current actions:
                     break;
                 case Behavior.ValidateQuerySemantically:
                     RunValidateQuerySemanticallyExample.Run();
+                    break;
+                case Behavior.ModelSchemaSepartor:
+                    ModelSchemaSeparator.CreateDacpacPerSchema(TSqlModel.LoadFromDacpac(args[1], new ModelLoadOptions()));
                     break;
                     // To test deployment plan-based filtering see the TestFiltering.TestFilterPlanWhenPublishing() unit test
             }
@@ -93,6 +100,11 @@ Current actions:
                 {
                     behavior = Behavior.ValidateQuerySemantically;
                 }
+                if (MatchesBehavior(args[0], Behavior.ModelSchemaSepartor) && args.Length > 1)
+                {
+                    behavior = Behavior.ModelSchemaSepartor;
+                }
+
             }
             return behavior;
         }
